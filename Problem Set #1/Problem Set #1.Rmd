@@ -18,8 +18,30 @@ To choose the topic keywords, Penney referred to the list used by the US Departm
 
 a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
 
+```{r,message=FALSE}
+
+library(foreign)
+library(MASS)
+library(ggplot2)
+library(tidyverse)
+library(wikipediatrend)
+
+dat <- wp_trend("Al-Qaeda", lang = "en", from = "2012-01-01", to = "2014-12-12")
+
+
+```
+
 
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
 
 
 c) In part (b) you compared the study group with one comparator group. Penney also compared with two other comparator groups: “Infrastructure Security”–related articles (appendix table 11) and popular Wikipedia pages (appendix table 12). Come up with an alternative comparator group, and test whether the findings from part (b) are sensitive to your choice of comparator group. Which choice makes most sense? Why?
+
+
+
+
+
+
+
+
+
