@@ -22,9 +22,70 @@ library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(wikipediatrend)
-library(rvest) 
+library(rvest)
+```
 
-dat <- wp_trend("Al-Qaeda", lang = "en", from = "2012-01-01", to = "2014-12-12")
+```{r,message=FALSE, warning=FALSE}
+data1 <- wp_trend(page = c("Al-Qaeda",
+                           "Terrorism",
+                           "Terror",
+                           "Attack",
+                           "Iraq",
+                           "Afghanistan",
+                           "Iran",
+                           "Pakistan",
+                           "Agro",
+                           "Environmental terrorism",
+                           "Eco-terrorism",
+                           "Conventional weapon",
+                           "Weapons grade",
+                           "Dirty bomb",
+                           "Nuclear enrichment",
+                           "Nuclear",
+                           "Chemical weapon",
+                           "Biological weapon",
+                           "Ammonium nitrate",
+                           "Improvised_explosive_device",
+                           "Abu Sayyaf",
+                           "Hamas",
+                           "FARC",
+                           "Irish_Republican_Army",
+                           "Euskadi_ta_Askatasuna",
+                           "Hezbollah",
+                           "Tamil Tigers",
+                           "PLO",
+                           "Palestine_Liberation_Front",
+                           "Car bomb",
+                           "Jihad",
+                           "Taliban",
+                           "Suicide bomber",
+                           "Suicide attack",
+                           "Al-Qaeda_in_the_Arabian_Peninsula",
+                           "Al-Qaeda_in_the_Islamic_Maghreb",
+                           "Tehrik-i_Taliban_Pakistan",
+                           "Yemen",
+                           "Pirates",
+                           "Extremism",
+                           "Somalia",
+                           "Nigeria",
+                           "Political radicalism",
+                           "Al-Shabaab",
+                           "Nationalism",
+                           "Recruitment",
+                           "Fundamentalism",
+                           "Islamist"),
+                  from = "2012-01-01",
+                  to = "2014-08-31",
+                  lang = "en") %>% 
+  as_tibble(.) %>%
+  mutate(.,
+         month = format(date, "%m"),
+         year = format(date, "%y")) %>% 
+  group_by(., month, year) %>% 
+  summarise(., total = sum(views)) %>% 
+  arrange(., year) %>% 
+  rowid_to_column(var = "totalmonth") %>% 
+  mutate(., group = factor(ifelse(totalmonth < 18, 0, 1)))
 ```
 ```{r,message=FALSE}
 # Alternative way to go about things using the "rvest" package and with a loop.
@@ -65,6 +126,7 @@ for (i in 2:length(file)) {
   mydata1 <- rbind(mydata1, df)
   
 }
+unlink(temp)
 ```
 
 a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
@@ -88,6 +150,21 @@ data %>%
        x = "Time (Months)", 
        y = "Total Views")
 
+# This ought to work (to some extent; obviously it's not identical). However, the total view numbers—as before—do not match up with what Penney (2016) came up with.
+
+ggplot(data1, aes(x = totalmonth,
+                  y = total,
+                  group = group)) +
+  geom_point() +
+  geom_smooth(method = 'lm',
+              se = FALSE) +
+  geom_vline(xintercept = 17.75) +
+  scale_y_continuous(name = "Total Views (All 48 Wikipedia Articles)",
+                     labels = scales::comma,
+                     limits = c(1750000, NA),
+                     breaks = seq(1500000, 4000000, 500000)) +
+  scale_x_continuous(name = "Time (Months)",
+                     breaks = seq(0, 32, 2))
 
 ```
 
@@ -107,12 +184,4 @@ unique(dat$article)
 
 
 c) In part (b) you compared the study group with one comparator group. Penney also compared with two other comparator groups: “Infrastructure Security”–related articles (appendix table 11) and popular Wikipedia pages (appendix table 12). Come up with an alternative comparator group, and test whether the findings from part (b) are sensitive to your choice of comparator group. Which choice makes most sense? Why?
-
-
-
-
-
-
-
-
 
