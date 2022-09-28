@@ -171,14 +171,62 @@ ggplot(data1, aes(x = totalmonth,
 
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
 
-```{r}
-# When I run the code below the only 'article' type is al-qaeda' 
-# I dont see a 'DHS & Other Agencies' in the raw data frame 
+```{r, message=FALSE}
+# Creating a data frame of the DHS and other agencies table, Table 10, p. 180.
+data2 <- wp_trend(page = c("Department_of_Homeland_Security",
+                           "Federal_Emergency_Management_Agency",
+                           "Coast_Guard",
+                           "Customs_and_Border_Protection",
+                           "Border_patrol",
+                           "Secret_Service",
+                           "Bureau_of_Land_Management",
+                           "Homeland_defense",
+                           "Espionage",
+                           "Task_Force_88",
+                           "Central_Intelligence_Agency",
+                           "Fusion_center",
+                           "DEA",
+                           "Secure_Border_Initiative",
+                           "Federal_Bureau_of_Investigation",
+                           "Alcohol_and_Tobacco_Tax_and_Trade_Bureau",
+                           "U.S._Citizenship_and_Immigration_Services",
+                           "Federal_Air_Marshal_Service",
+                           "Transportation_Security_Administration",
+                           "Air_Marshal",
+                           "Federal_Aviation_Administration",
+                           "National_Guard",
+                           "Emergency_Management",
+                           "U.S._Immigration_and_Customs_Enforcement",
+                           "United_Nations"),
+                  from = "2012-01-01",
+                  to = "2014-08-31",
+                  lang = "en") %>% 
+  as_tibble(.) %>%
+  mutate(.,
+         month = format(date, "%m"),
+         year = format(date, "%y")) %>% 
+  group_by(., month, year) %>% 
+  summarise(., total = sum(views)) %>% 
+  arrange(., year) %>% 
+  rowid_to_column(var = "totalmonth") %>% 
+  mutate(., group = factor(ifelse(totalmonth < 18, 0, 1)))
 
-unique(dat$article)
-
-
-
+# Replicating Figure 4A.
+ggplot(data1, aes(x = totalmonth,
+                  y = total,
+                  group = group)) +
+  geom_point(data = data1, color = "blue") +
+  geom_point(data = data2, color = "red") +
+  geom_smooth(data = data1,
+              method = 'lm') +
+  geom_smooth(data = data2,
+              method = 'lm',
+              color = "red") +
+  geom_vline(xintercept = 17.75) +
+  scale_y_continuous(name = "Total Views (All 48 Wikipedia Articles)",
+                     labels = scales::comma) +
+  scale_x_continuous(name = "Time (Months)",
+                     breaks = seq(0, 32, 2))
 
 ```
 
