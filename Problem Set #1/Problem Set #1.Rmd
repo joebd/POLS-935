@@ -16,15 +16,14 @@ Penney (2016) explored whether the widespread publicity about NSA/PRISM surveill
 
 To choose the topic keywords, Penney referred to the list used by the US Department of Homeland Security for tracking and monitoring social media. The DHS list categorizes certain search terms into a range of issues, i.e., “Health Concern,” “Infrastructure Security,” and “Terrorism.” For the study group, Penney used the 48 keywords related to “Terrorism” (see appendix table 8). He then aggregated Wikipedia article view counts on a monthly basis for the corresponding 48 Wikipedia articles over a 32-month period from the beginning of January 2012 to the end of August 2014. To strengthen his argument, he also created several comparison groups by tracking article views on other topics. Now, you are going to replicate Penney (2016). All the raw data that you will need for this activity is available from Wikipedia (https://dumps.wikimedia.org/other/pagecounts-raw/ (Links to an external site.)). Or you can get it from the R-package wikipediatrend. When you write up your responses, please note which data source you used. This activity will give you practice in data wrangling and thinking about discovering natural experiments in big data sources. It will also get you up and running with a potentially interesting data source for future projects.
 
-a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
-
 ```{r,message=FALSE}
 
-library(foreign)
-library(MASS)
+library(lubridate)
+library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(wikipediatrend)
+library(rvest) 
 
 dat <- wp_trend("Al-Qaeda", lang = "en", from = "2012-01-01", to = "2014-12-12")
 
@@ -73,7 +72,43 @@ for (i in 2:length(file)) {
 ```
 
 
+a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
+
+```{r}
+
+data <- dat %>% 
+  dplyr::filter(date < "2012-01-01" | date > "2013-06-01" ) %>% 
+  arrange(date)
+
+tibble::tibble(data)
+
+# So I am able to make a general plot; but the x-axis in the article 
+# has the count of months which I am unable to figure out atm
+# once the dates are in a count order; add 'geom_vline(xintercept = )' 
+# I also just noticed my y 'views' total does not much up in either data frame
+
+data %>% 
+  ggplot(aes(date, views)) + geom_point() + geom_smooth(method = "loess") + 
+  labs(title = "", 
+       x = "Time (Months)", 
+       y = "Total Views")
+
+
+```
+
+
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
+
+```{r}
+# When I run the code below the only 'article' type is al-qaeda' 
+# I dont see a 'DHS & Other Agencies' in the raw data frame 
+
+unique(dat$article)
+
+
+
+
+```
 
 
 c) In part (b) you compared the study group with one comparator group. Penney also compared with two other comparator groups: “Infrastructure Security”–related articles (appendix table 11) and popular Wikipedia pages (appendix table 12). Come up with an alternative comparator group, and test whether the findings from part (b) are sensitive to your choice of comparator group. Which choice makes most sense? Why?
