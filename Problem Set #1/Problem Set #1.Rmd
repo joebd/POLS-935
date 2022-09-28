@@ -133,32 +133,18 @@ a) Read Penney (2016) and replicate his figure 2, which shows the page views for
 
 ```{r}
 
-data <- dat %>% 
-  dplyr::filter(date < "2012-01-01" | date > "2013-06-01" ) %>% 
-  arrange(date)
-
-tibble::tibble(data)
-
-# So I am able to make a general plot; but the x-axis in the article 
-# has the count of months which I am unable to figure out atm
-# once the dates are in a count order; add 'geom_vline(xintercept = )' 
-# I also just noticed my y 'views' total does not much up in either data frame
-
-data %>% 
-  ggplot(aes(date, views)) + geom_point() + geom_smooth(method = "loess") + 
-  labs(title = "", 
-       x = "Time (Months)", 
-       y = "Total Views")
-
 # This ought to work (to some extent; obviously it's not identical). However, the total view numbers—as before—do not match up with what Penney (2016) came up with.
 
 ggplot(data1, aes(x = totalmonth,
-                  y = total,
+                  y = total, 
                   group = group)) +
   geom_point() +
   geom_smooth(method = 'lm',
               se = FALSE) +
   geom_vline(xintercept = 17.75) +
+  geom_text(aes(x = data1$totalmonth[18], y = 4250000, 
+                label = "Mid-June 2013"), colour = "black", 
+                vjust = 1, size = 2.75) +
   scale_y_continuous(name = "Total Views (All 48 Wikipedia Articles)",
                      labels = scales::comma,
                      limits = c(1750000, NA),
