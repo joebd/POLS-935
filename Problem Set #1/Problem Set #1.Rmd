@@ -88,51 +88,50 @@ data1 <- wp_trend(page = c("Al-Qaeda",
   mutate(., group = factor(ifelse(totalmonth < 18, 0, 1)))
 ```
 ```{r,message=FALSE}
-# Alternative way to go about things using the "rvest" package and with a loop.
-
-library(tidyverse)
-library(rvest)
-
-# Doing it for a single file.
-
-file <- read_html("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/") %>%
-  html_nodes("li") %>%
-  html_node("a") %>% 
-  html_attr("href") %>% 
-  str_subset("pagecounts")
-
-temp <- tempfile()
-# The next line of code will download from the internet. May take some time depending on your download speed.
-download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[1]), temp)
-gzfile(temp, 'rt')
-mydata1 <- read.table(temp, sep = " ") %>% 
-  as_tibble() %>% 
-  filter(V1 == "en",
-         V2 == "Al-Qaeda")
-
-# What the above did was to isolate the page counts of the page "Al-Qaeda" in the English language. If you check (run "length(file)" to do so), there are 744 files in the database we looked at. The previous did the process only with one. Therefore, the question becomes a question of doing it for the remaining 743 files without us having to manually put them all together.
-
-for (i in 2:length(file)) {
-  
-  # Doing the same deal, but within the loop.
-  download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[i]), temp)
-  gzfile(temp, 'rt')
-  df <- read.table(temp, sep = "", fill = T) %>% 
-    as_tibble() %>% 
-    filter(V1 == "en",
-           V2 == "Al-Qaeda")
-  
-  # Adding the created 1x4 data frame to the end of the main data.
-  mydata1 <- rbind(mydata1, df)
-  
-}
-unlink(temp)
+# # Alternative way to go about things using the "rvest" package and with a loop.
+# 
+# library(tidyverse)
+# library(rvest)
+# 
+# # Doing it for a single file.
+# 
+# file <- read_html("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/") %>%
+#   html_nodes("li") %>%
+#   html_node("a") %>% 
+#   html_attr("href") %>% 
+#   str_subset("pagecounts")
+# 
+# temp <- tempfile()
+# # The next line of code will download from the internet. May take some time depending on your download speed.
+# download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[1]), temp)
+# gzfile(temp, 'rt')
+# mydata1 <- read.table(temp, sep = " ") %>% 
+#   as_tibble() %>% 
+#   filter(V1 == "en",
+#          V2 == "Al-Qaeda")
+# 
+# # What the above did was to isolate the page counts of the page "Al-Qaeda" in the English language. If you check (run "length(file)" to do so), there are 744 files in the database we looked at. The previous did the process only with one. Therefore, the question becomes a question of doing it for the remaining 743 files without us having to manually put them all together.
+# 
+# for (i in 2:length(file)) {
+#   
+#   # Doing the same deal, but within the loop.
+#   download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[i]), temp)
+#   gzfile(temp, 'rt')
+#   df <- read.table(temp, sep = "", fill = T) %>% 
+#     as_tibble() %>% 
+#     filter(V1 == "en",
+#            V2 == "Al-Qaeda")
+#   
+#   # Adding the created 1x4 data frame to the end of the main data.
+#   mydata1 <- rbind(mydata1, df)
+#   
+# }
+# unlink(temp)
 ```
 
 a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
 
-```{r}
-
+```{r, warning=FALSE}
 # This ought to work (to some extent; obviously it's not identical). However, the total view numbers—as before—do not match up with what Penney (2016) came up with.
 
 ggplot(data1, aes(x = totalmonth,
@@ -150,10 +149,9 @@ ggplot(data1, aes(x = totalmonth,
                      limits = c(1750000, NA),
                      breaks = seq(1500000, 4000000, 500000)) +
   scale_x_continuous(name = "Time (Months)",
-                     breaks = seq(0, 32, 2))
-
+                     breaks = seq(0, 32, 2)) +
+  theme_minimal()
 ```
-
 
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
 
