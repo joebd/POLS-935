@@ -17,7 +17,6 @@ Penney (2016) explored whether the widespread publicity about NSA/PRISM surveill
 To choose the topic keywords, Penney referred to the list used by the US Department of Homeland Security for tracking and monitoring social media. The DHS list categorizes certain search terms into a range of issues, i.e., “Health Concern,” “Infrastructure Security,” and “Terrorism.” For the study group, Penney used the 48 keywords related to “Terrorism” (see appendix table 8). He then aggregated Wikipedia article view counts on a monthly basis for the corresponding 48 Wikipedia articles over a 32-month period from the beginning of January 2012 to the end of August 2014. To strengthen his argument, he also created several comparison groups by tracking article views on other topics. Now, you are going to replicate Penney (2016). All the raw data that you will need for this activity is available from Wikipedia (https://dumps.wikimedia.org/other/pagecounts-raw/ (Links to an external site.)). Or you can get it from the R-package wikipediatrend. When you write up your responses, please note which data source you used. This activity will give you practice in data wrangling and thinking about discovering natural experiments in big data sources. It will also get you up and running with a potentially interesting data source for future projects.
 
 ```{r,message=FALSE}
-
 library(lubridate)
 library(dplyr)
 library(ggplot2)
@@ -26,11 +25,8 @@ library(wikipediatrend)
 library(rvest) 
 
 dat <- wp_trend("Al-Qaeda", lang = "en", from = "2012-01-01", to = "2014-12-12")
-
-
 ```
-
-```{r, message=FALSE}
+```{r,message=FALSE}
 # Alternative way to go about things using the "rvest" package and with a loop.
 
 library(tidyverse)
@@ -70,7 +66,6 @@ for (i in 2:length(file)) {
   
 }
 ```
-
 
 a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
 
