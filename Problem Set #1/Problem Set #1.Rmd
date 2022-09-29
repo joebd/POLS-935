@@ -131,6 +131,8 @@ unlink(temp)
 
 a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
 
+# Interpretation for A 
+
 ```{r}
 
 # This ought to work (to some extent; obviously it's not identical). However, the total view numbers—as before—do not match up with what Penney (2016) came up with.
@@ -156,6 +158,8 @@ ggplot(data1, aes(x = totalmonth,
 
 
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
+
+# Interpretation for B
 
 ```{r, message=FALSE}
 # Creating a data frame of the DHS and other agencies table, Table 10, p. 180.
@@ -218,4 +222,87 @@ ggplot(data1, aes(x = totalmonth,
 
 
 c) In part (b) you compared the study group with one comparator group. Penney also compared with two other comparator groups: “Infrastructure Security”–related articles (appendix table 11) and popular Wikipedia pages (appendix table 12). Come up with an alternative comparator group, and test whether the findings from part (b) are sensitive to your choice of comparator group. Which choice makes most sense? Why?
+
+# Interpretation for C
+
+```{r}
+
+# Use table 9(data1) and table 11 (data3); 
+# Uses the infrastructure and total views
+
+data3 <- wp_trend(page = c("Infrastructure_security",
+                           "Airport",
+                           "Airplane",
+                           "Chemical_burn",
+                           "CIKR",
+                           "Amtrak",
+                           "Collapse",
+                           "Information_infrastructure",
+                           "Telecommunications_network",
+                           "Telecommunication",
+                           "Critical_Infrastructure",
+                           "National_Information_Infrastructure",
+                           "Metro_station",
+                           "Washington_Metropolitan_Area_Transit_Authority",
+                           "Subway",
+                           "Bay_Area_Rapid_Transit",
+                           "Metropolitan_Atlanta_Rapid_Transit_Authority",
+                           "Port_authority",
+                           "NBIC",
+                           "Electrical_grid",
+                           "Power",
+                           "Smart",
+                           "Full_body_scanner",
+                           "Electric_power",
+                           "Failure",
+                           "Power_outage",
+                           "Blackout",
+                           "Brownout",
+                           "Port",
+                           "Dock_(maritime)",
+                           "Bridge",
+                           "Flight_cancellation_and_delay",
+                           "Delay",
+                           "Electric_power_transmission"),
+                  from = "2012-01-01",
+                  to = "2014-08-31",
+                  lang = "en") %>% 
+  as_tibble(.) %>%
+  mutate(.,
+         month = format(date, "%m"),
+         year = format(date, "%y")) %>% 
+  group_by(., month, year) %>% 
+  summarise(., total = sum(views)) %>% 
+  arrange(., year) %>% 
+  rowid_to_column(var = "totalmonth") %>% 
+  mutate(., group = factor(ifelse(totalmonth < 18, 0, 1)))
+
+# Plot 
+ggplot(data1, aes(x = totalmonth,
+                  y = total,
+                  group = group)) +
+  geom_point(data = data1, color = "black") +
+  geom_point(data = data3, color = "black") +
+  geom_smooth(data = data1,
+              method = "lm",
+              color = "orange") +
+  geom_smooth(data = data3,
+              method = "lm",
+              color = "blue") +
+  geom_vline(xintercept = 17.75) +
+  geom_text(aes(x = data1$totalmonth[20], y = 4250000, 
+                label = "Mid-June 2013"), colour = "black", 
+                vjust = 1, size = 2.75) +
+  scale_y_continuous(name = "Total Views (All Articles)",
+                     labels = scales::comma) +
+  scale_x_continuous(name = "Time (Months)",
+                     breaks = seq(0, 32, 2)) + 
+ ggtitle("Terrorism and Infrastructure Security Related Articles") +
+ theme_minimal()
+
+
+
+```
+
+
 
