@@ -1,7 +1,7 @@
 ---
 title: 'Problem Set #1'
-author: ''
-date: "2022-09-23"
+author: 'Insert Name'
+date: "September 28th, 2022"
 output: pdf_document
 ---
 
@@ -24,6 +24,8 @@ library(tidyverse)
 library(wikipediatrend)
 library(rvest)
 ```
+
+a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
 
 ```{r,message=FALSE, warning=FALSE}
 data1 <- wp_trend(page = c("Al-Qaeda",
@@ -111,27 +113,25 @@ mydata1 <- read.table(temp, sep = " ") %>%
          V2 == "Al-Qaeda")
 
 # What the above did was to isolate the page counts of the page "Al-Qaeda" in the English language. If you check (run "length(file)" to do so), there are 744 files in the database we looked at. The previous did the process only with one. Therefore, the question becomes a question of doing it for the remaining 743 files without us having to manually put them all together.
-
-for (i in 2:length(file)) {
-  
-  # Doing the same deal, but within the loop.
-  download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[i]), temp)
-  gzfile(temp, 'rt')
-  df <- read.table(temp, sep = "", fill = T) %>% 
-    as_tibble() %>% 
-    filter(V1 == "en",
-           V2 == "Al-Qaeda")
-  
-  # Adding the created 1x4 data frame to the end of the main data.
-  mydata1 <- rbind(mydata1, df)
-  
-}
-unlink(temp)
+# 
+# for (i in 2:length(file)) {
+#   
+#   # Doing the same deal, but within the loop.
+#   download.file(paste0("https://dumps.wikimedia.org/other/pagecounts-raw/2012/2012-01/", file[i]), temp)
+#   gzfile(temp, 'rt')
+#   df <- read.table(temp, sep = "", fill = T) %>% 
+#     as_tibble() %>% 
+#     filter(V1 == "en",
+#            V2 == "Al-Qaeda")
+#   
+#   # Adding the created 1x4 data frame to the end of the main data.
+#   mydata1 <- rbind(mydata1, df)
+#   
+# }
+# unlink(temp)
 ```
 
-a) Read Penney (2016) and replicate his figure 2, which shows the page views for “Terrorism”-related pages before and after the Snowden revelations. Interpret the findings.
-
-# Interpretation for A 
+## Interpretation for A 
 
 ```{r}
 
@@ -144,7 +144,7 @@ ggplot(data1, aes(x = totalmonth,
   geom_smooth(method = 'lm',
               se = FALSE) +
   geom_vline(xintercept = 17.75) +
-  geom_text(aes(x = data1$totalmonth[18], y = 4250000, 
+  geom_text(aes(x = data1$totalmonth[20], y = 4250000, 
                 label = "Mid-June 2013"), colour = "black", 
                 vjust = 1, size = 2.75) +
   scale_y_continuous(name = "Total Views (All 48 Wikipedia Articles)",
@@ -159,7 +159,7 @@ ggplot(data1, aes(x = totalmonth,
 
 b) Next, replicate figure 4A, which compares the study group (“Terrorism”- related articles) with a comparator group using keywords categorized under “DHS & Other Agencies” from the DHS list (see appendix table 10 and footnote 139). Interpret the findings.
 
-# Interpretation for B
+## Interpretation for B
 
 ```{r, message=FALSE}
 # Creating a data frame of the DHS and other agencies table, Table 10, p. 180.
@@ -213,6 +213,9 @@ ggplot(data1, aes(x = totalmonth,
               method = 'lm',
               color = "red") +
   geom_vline(xintercept = 17.75) +
+  geom_text(aes(x = data1$totalmonth[20], y = 4250000, 
+                label = "Mid-June 2013"), colour = "black", 
+                vjust = 1, size = 2.75) +
   scale_y_continuous(name = "Total Views (All 48 Wikipedia Articles)",
                      labels = scales::comma) +
   scale_x_continuous(name = "Time (Months)",
