@@ -230,8 +230,7 @@ c) In part (b) you compared the study group with one comparator group. Penney al
 
 ```{r}
 
-# Use table 9(data1) and table 11 (data3); 
-# Uses the infrastructure and total views
+# Using alternative comparator group for Question C
 
 data3 <- wp_trend(page = c("Infrastructure_security",
                            "Airport",
