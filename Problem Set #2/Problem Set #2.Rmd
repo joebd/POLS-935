@@ -34,6 +34,8 @@ d) Recreate figure 3a (main figure), but change the y-axis to be the raw mention
 
 
 e) Does the difference between (b) and (d) lead you to reevaluate any of the results of Michel et al. (2011). Why or why not? 
+
+
 f) Now, using the proportion of mentions, replicate the inset of figure 3a. That is, for each year between 1875 and 1975, calculate the half-life of that year. The half-life is defined to be the number of years that pass before the proportion of mentions reaches half its peak value. Note that Michel et al. (2011) do something more complicated to estimate the half- life---see section III.6 of their Supporting Online Information---but they claim that both approaches produce similar results. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data? (Hint: Don’t be surprised if it doesn’t.)
 
 
