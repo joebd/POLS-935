@@ -45,6 +45,10 @@ ggplot(mydata1, aes(x = Year,
   theme_minimal()
 
 # There is smoothing in this graph, which we probably do not want. Add if possible.
+
+##actually we have use the total count, because we should calculate the proportion for plotting those three years. I get the data from Nick, However, it dose not work as a data frame.
+
+
 ```
 
 
