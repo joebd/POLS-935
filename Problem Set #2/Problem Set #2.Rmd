@@ -44,10 +44,9 @@ ggplot(mydata1, aes(x = Year,
                      breaks = seq(1850, 2000, 25)) +
   theme_minimal()
 
-# There is smoothing in this graph, which we probably do not want. Add if possible.
+# There is smoothing in this graph, which we probably do not want. Remove the smoothing if possible.
 
 ##actually we have use the total count, because we should calculate the proportion for plotting those three years. I get the data from Nick, However, it dose not work as a data frame.
-
 
 ```
 
