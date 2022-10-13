@@ -74,23 +74,7 @@ ggplot(mydata1, aes(x = Year,
 ```
 
 ```{r}
-# We need the total count to calculate the frequency. This set is a bit more difficult
-
-total_count <- tibble(read.table(
-  "googlebooks-eng-all-totalcounts-20120701.txt")) %>% 
-# Need to separate so that each cell has only one value
-  separate_rows(1:425, sep = ",") %>% 
-# Transform so the variables are moved into the column position
-  t(.) %>% 
-  as.data.frame(.)
-# Simply naming columns and then coding so all values are numeric
-# This isn't the most efficient so let me know if there's a better way
-colnames(total_count) <- c("year","match_count","page_count","volume_count")
-total_count$year <- as.numeric(as.character(total_count$year))
-total_count$match_count <- as.numeric(as.character(total_count$match_count))
-total_count$page_count <- as.numeric(as.character(total_count$page_count))
-total_count$volume_count <- as.numeric(as.character(total_count$volume_count))
-
+# Use Nasrin's code to load in totals
 
 fig3a <- gram1 %>% 
   filter(year >= 1850, year <= 2000) %>% 
