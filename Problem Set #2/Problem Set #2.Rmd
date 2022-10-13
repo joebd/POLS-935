@@ -80,70 +80,28 @@ dataframe <- merge(data, df, by = "Year")
 
 ```
 
-```{r}
-# # I downloaded 1-grams 1 file from the website. I have had the most luck with read_table() to load it in. 
-# library(readr)
-# gram1 <- read_table("googlebooks-eng-all-1gram-20120701-1",
-#            col_names = (c("ngram","year","match_count","volume_count")))
-```
-
 
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
 
 ```{r, warning=false}
 
-# # Code from Nasrin 
-# 
-# df_total <- read_table("path-to-txt-file-goes-here", col_names = FALSE, col_types = paste0(rep("c", 426), collapse = "")) %>%
-#   pivot_longer(cols = everything()) %>%
-#   separate(value, c("year", "match_total", "page_total", "volume_total")) %>%
-#   select(-name) %>%
-#   mutate_if(is.character, as.numeric)
+dataframe$freq1833 <- dataframe$`total-term1883` / dataframe$match_count* 10000
+
+dataframe$freq1910 <- dataframe$`total-term1910` / dataframe$match_count* 10000
+
+dataframe$freq1950 <- dataframe$`total-term1950` / dataframe$match_count* 10000
+
+##Plot based on frequency
+
+plot(c(1875,2000), c(0,1.5), type="n", main="Figure 3a (main)",ylab="Relative Frequency", xlab="Year")
+lines(dataframe$Year,dataframe$freq1833,col="blue", lwd=2)
+lines(dataframe$Year,dataframe$freq1910,col="green", lwd=2)
+lines(dataframe$Year,dataframe$freq1950,col="red", lwd=2)
+legend(1880,1.5,legend = c("\"1883\"","\"1910\"","\"1950\""), col=c("blue","green","red"),cex=.8, lwd=2, y.intersp=1)
 
 
-```
 
-```{r, warning=FALSE}
-# Plotting Figure 3a.
-ggplot(mydata1, aes(x = Year,
-                    y = Frequency)) +
-  geom_line(aes(colour = Phrase)) +
-  scale_x_continuous(limits = c(1850, 2000),
-                     breaks = seq(1850, 2000, 25)) +
-  scale_y_continuous(labels = scales::comma) + # Disabling scientific notation.
-  theme_minimal()
 
-# There is smoothing in this graph, which we probably do not want. Remove the smoothing if possible.
-
-##actually we have use the total count, because we should calculate the proportion for plotting those three years. I get the data from Nick, However, it dose not work as a data frame.
-
-# I believe that as it stands, the "Frequency" (y-axis) is already giving us the
-# proportion anyway. That is to say, the scale equates to 0.02%, 0.04%, etc. of all
-# phrases in the corpus. What needed to be done is to turn the scale from a scientific
-# notation to a standard notation in order to interpret it, which "scales::comma" does.
-# However, I am not sure on this, and feel free to further refine the model and correct
-# me if you deem it necessary.
-
-```
-
-```{r}
-# Use Nasrin's code to load in totals
-
-fig3a <- gram1 %>% 
-  filter(year >= 1850, year <= 2000) %>% 
-  select(ngram,year,match_count) %>% 
-# This ensures we only have words for the years we want
-  filter(ngram %in% c("1883","1910","1950")) %>%
-# Merge the two datasets by year so we can use the total match.count (which is match_count.y here) to calculate frequency
-  merge(.,total_count, by = "year") %>% 
-  mutate(frequency = match_count.x/match_count.y)
-
-# Plotting fig 3a
-fig3a %>% 
-  ggplot(aes(x = year, y = frequency, color = ngram)) +
-  geom_line() +
-  scale_color_manual(values = c("blue","dark green","red")) +
-  theme_light()
 ```
 
 c) Now check your graph against the graph created by the NGram Viewer.
@@ -153,25 +111,16 @@ c) Now check your graph against the graph created by the NGram Viewer.
 d) Recreate figure 3a (main figure), but change the y-axis to be the raw mention count (not the rate of mentions).
 
 ```{r, warning=FALSE}
-# This is actually what we did in (a). Alternative way of doing it but not much
-# different from below. Choose at your leisure.
 
-ggplot(mydata2, aes(x = Year, y = Count, colour = Phrase)) +
-  geom_line() +
-  scale_x_continuous(limits = c(1850, 2000),
-                     breaks = seq(1850, 2000, 25)) +
-  scale_y_continuous(labels = scales::comma) +
-  theme_minimal()
-```
 
 ```{r, warning=FALSE}
-# Just like before but simply taking the count data. I used both match_count.x and match_count.y and the x data looks the most "right"
-fig3a %>% 
-  select(ngram,year,match_count.x) %>% 
-  ggplot(., aes(x = year, y = match_count.x, color = ngram)) +
-  geom_line() +
-  scale_color_manual(values = c("blue","dark green","red")) +
-  theme_light()
+
+plot(c(1875,2000),c(0,max(dataframe$`total-term1950`)), type="n", main="Figure 3a, absolute counts",ylab="Count", xlab="Year")
+lines(dataframe$Year,dataframe$`total-term1883`,col="blue", lwd=2)
+lines(dataframe$Year,dataframe$`total-term1910`,col="green", lwd=2)
+lines(dataframe$Year,dataframe$`total-term1950`,col="red", lwd=2)
+legend(1890,250000,legend = c("\"1883\"","\"1910\"","\"1950\""), col=c("blue","green","red"),cex=.8, lwd=2, y.intersp=1)
+
 ```
 
 e) Does the difference between (b) and (d) lead you to reevaluate any of the results of Michel et al. (2011). Why or why not?
