@@ -80,8 +80,8 @@ dataframe <- merge(data, df, by = "Year")
 
 ```
 
-
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
+
 
 ```{r, warning=false}
 
@@ -98,8 +98,6 @@ lines(dataframe$Year,dataframe$freq1833,col="blue", lwd=2)
 lines(dataframe$Year,dataframe$freq1910,col="green", lwd=2)
 lines(dataframe$Year,dataframe$freq1950,col="red", lwd=2)
 legend(1880,1.5,legend = c("\"1883\"","\"1910\"","\"1950\""), col=c("blue","green","red"),cex=.8, lwd=2, y.intersp=1)
-
-
 
 
 ```
