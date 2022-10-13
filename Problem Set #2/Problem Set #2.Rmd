@@ -23,27 +23,47 @@ library(ngramr)
 
 a) Get the raw data from the Google Books NGram Viewer website. In particular, you should use version 2 of the English language corpus, which was released on July 1, 2012. Uncompressed, this file is 1.4 GB.
 
-```{r}
+```{r, warning=FALSE}
 mydata1 <- ngram(c("1883", "1910", "1950"),
                  corpus = "en-2019",
                  year_start = "1800",
-                 year_end = "2020") %>% 
-  as_tibble() # The data is in another format, so we turn it into a tibble here.
+                 year_end = "2020",
+                 smoothing = 0) %>% 
+  as_tibble(.) %>% # The data is in another format, so we turn it into a tibble here.
+  mutate(., across(where(is.numeric), round, 10)) # Removing scientific notation.
 
-# Of course, the total count file needs to be read in as well. The .txt. file from Google's own site is a bit difficult to read in. That needs to be added in.
-# total count data
-library(readr)
-total_count <- read_table("totalcounts.txt",
-           col_names = (c("year","count_1grams","count_pages", "count_books")))
-#getting rid of the previous column names
-total_count = total_count[-1,]
+# The reason we use "mutate" and then "across" is because "mutate_if" is superseded. That
+# may cause code to be unusable later on, should we wish to recycle this code in the
+# future.
+
+mydata2 <- ngram(c("1883", "1910", "1950"),
+                 corpus = "en-2019",
+                 year_start = "1800",
+                 year_end = "2020",
+                 smoothing = 0,
+                 count = TRUE) %>% # Getting total counts. Check if this did the job.
+  as_tibble(.) %>% 
+  mutate(., across(where(is.numeric), round, 10))
+
+# Loading in the "totalcounts" file (about 1.5GB) takes an -obscene- amount of time,
+# so much so that it's impractical and bricks R. Are we using different files, or have
+# you figured out a way to do it efficiently?
+# There is a 11KB "totalcounts" file, but I'm not sure if that file is what we are
+# looking for. Please clarify ASAP.
+
+# # total count data
+# library(readr)
+# total_count <- read_table("totalcounts.txt",
+#            col_names = (c("year","count_1grams","count_pages", "count_books")))
+# #getting rid of the previous column names
+# total_count = total_count[-1,]
 ```
 
 ```{r}
-# I downloaded 1-grams 1 file from the website. I have had the most luck with read_table() to load it in. 
-library(readr)
-gram1 <- read_table("googlebooks-eng-all-1gram-20120701-1",
-           col_names = (c("ngram","year","match_count","volume_count")))
+# # I downloaded 1-grams 1 file from the website. I have had the most luck with read_table() to load it in. 
+# library(readr)
+# gram1 <- read_table("googlebooks-eng-all-1gram-20120701-1",
+#            col_names = (c("ngram","year","match_count","volume_count")))
 ```
 
 
@@ -51,18 +71,16 @@ b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this
 
 ```{r, warning=false}
 
-# Code from Nasrin 
-
-df_total <- read_table("path-to-txt-file-goes-here", col_names = FALSE, col_types = paste0(rep("c", 426), collapse = "")) %>%​
-  pivot_longer(cols = everything()) %>%​
-  separate(value, c("year", "match_total", "page_total", "volume_total")) %>%​
-  select(-name) %>%​
-  mutate_if(is.character, as.numeric)
+# # Code from Nasrin 
+# 
+# df_total <- read_table("path-to-txt-file-goes-here", col_names = FALSE, col_types = paste0(rep("c", 426), collapse = "")) %>%
+#   pivot_longer(cols = everything()) %>%
+#   separate(value, c("year", "match_total", "page_total", "volume_total")) %>%
+#   select(-name) %>%
+#   mutate_if(is.character, as.numeric)
 
 
 ```
-
-
 
 ```{r, warning=FALSE}
 # Plotting Figure 3a.
@@ -71,11 +89,19 @@ ggplot(mydata1, aes(x = Year,
   geom_line(aes(colour = Phrase)) +
   scale_x_continuous(limits = c(1850, 2000),
                      breaks = seq(1850, 2000, 25)) +
+  scale_y_continuous(labels = scales::comma) + # Disabling scientific notation.
   theme_minimal()
 
 # There is smoothing in this graph, which we probably do not want. Remove the smoothing if possible.
 
 ##actually we have use the total count, because we should calculate the proportion for plotting those three years. I get the data from Nick, However, it dose not work as a data frame.
+
+# I believe that as it stands, the "Frequency" (y-axis) is already giving us the
+# proportion anyway. That is to say, the scale equates to 0.02%, 0.04%, etc. of all
+# phrases in the corpus. What needed to be done is to turn the scale from a scientific
+# notation to a standard notation in order to interpret it, which "scales::comma" does.
+# However, I am not sure on this, and feel free to further refine the model and correct
+# me if you deem it necessary.
 
 ```
 
