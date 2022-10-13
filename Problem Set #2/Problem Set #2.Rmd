@@ -31,6 +31,12 @@ mydata1 <- ngram(c("1883", "1910", "1950"),
   as_tibble() # The data is in another format, so we turn it into a tibble here.
 
 # Of course, the total count file needs to be read in as well. The .txt. file from Google's own site is a bit difficult to read in. That needs to be added in.
+# total count data
+library(readr)
+total_count <- read_table("totalcounts.txt",
+           col_names = (c("year","count_1grams","count_pages", "count_books")))
+#getting rid of the previous column names
+total_count = total_count[-1,]
 ```
 
 ```{r}
