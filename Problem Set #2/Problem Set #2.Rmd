@@ -110,8 +110,6 @@ c) Now check your graph against the graph created by the NGram Viewer.
 
 d) Recreate figure 3a (main figure), but change the y-axis to be the raw mention count (not the rate of mentions).
 
-```{r, warning=FALSE}
-
 
 ```{r, warning=FALSE}
 
