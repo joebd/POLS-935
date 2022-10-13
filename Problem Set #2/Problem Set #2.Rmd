@@ -43,6 +43,21 @@ gram1 <- read_table("googlebooks-eng-all-1gram-20120701-1",
 
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
 
+```{r, warning=false}
+
+# Code from Nasrin 
+
+df_total <- read_table("path-to-txt-file-goes-here", col_names = FALSE, col_types = paste0(rep("c", 426), collapse = "")) %>%​
+  pivot_longer(cols = everything()) %>%​
+  separate(value, c("year", "match_total", "page_total", "volume_total")) %>%​
+  select(-name) %>%​
+  mutate_if(is.character, as.numeric)
+
+
+```
+
+
+
 ```{r, warning=FALSE}
 # Plotting Figure 3a.
 ggplot(mydata1, aes(x = Year,
