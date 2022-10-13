@@ -33,6 +33,14 @@ mydata1 <- ngram(c("1883", "1910", "1950"),
 # Of course, the total count file needs to be read in as well. The .txt. file from Google's own site is a bit difficult to read in. That needs to be added in.
 ```
 
+```{r}
+# I downloaded 1-grams 1 file from the website. I have had the most luck with read_table() to load it in. 
+library(readr)
+gram1 <- read_table("googlebooks-eng-all-1gram-20120701-1",
+           col_names = (c("ngram","year","match_count","volume_count")))
+```
+
+
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
 
 ```{r, warning=FALSE}
@@ -50,6 +58,41 @@ ggplot(mydata1, aes(x = Year,
 
 ```
 
+```{r}
+# We need the total count to calculate the frequency. This set is a bit more difficult
+
+total_count <- tibble(read.table(
+  "googlebooks-eng-all-totalcounts-20120701.txt")) %>% 
+# Need to separate so that each cell has only one value
+  separate_rows(1:425, sep = ",") %>% 
+# Transform so the variables are moved into the column position
+  t(.) %>% 
+  as.data.frame(.)
+# Simply naming columns and then coding so all values are numeric
+# This isn't the most efficient so let me know if there's a better way
+colnames(total_count) <- c("year","match_count","page_count","volume_count")
+total_count$year <- as.numeric(as.character(total_count$year))
+total_count$match_count <- as.numeric(as.character(total_count$match_count))
+total_count$page_count <- as.numeric(as.character(total_count$page_count))
+total_count$volume_count <- as.numeric(as.character(total_count$volume_count))
+
+
+fig3a <- gram1 %>% 
+  filter(year >= 1850, year <= 2000) %>% 
+  select(ngram,year,match_count) %>% 
+# This ensures we only have words for the years we want
+  filter(ngram %in% c("1883","1910","1950")) %>%
+# Merge the two datasets by year so we can use the total match.count (which is match_count.y here) to calculate frequency
+  merge(.,total_count, by = "year") %>% 
+  mutate(frequency = match_count.x/match_count.y)
+
+# Plotting fig 3a
+fig3a %>% 
+  ggplot(aes(x = year, y = frequency, color = ngram)) +
+  geom_line() +
+  scale_color_manual(values = c("blue","dark green","red")) +
+  theme_light()
+```
 
 c) Now check your graph against the graph created by the NGram Viewer.
 
@@ -61,6 +104,15 @@ d) Recreate figure 3a (main figure), but change the y-axis to be the raw mention
 # This is actually what we did in (a).
 ```
 
+```{r}
+# Just like before but simply taking the count data. I used both match_count.x and match_count.y and the x data looks the most "right"
+fig3a %>% 
+  select(ngram,year,match_count.x) %>% 
+  ggplot(., aes(x = year, y = match_count.x, color = ngram)) +
+  geom_line() +
+  scale_color_manual(values = c("blue","dark green","red")) +
+  theme_light()
+```
 
 e) Does the difference between (b) and (d) lead you to reevaluate any of the results of Michel et al. (2011). Why or why not?
 
