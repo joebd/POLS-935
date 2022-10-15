@@ -27,7 +27,11 @@ a) Get the raw data from the Google Books NGram Viewer website. In particular, y
 ## Alternative method without the ngramr package.
 
 # Loading the data into R.
-# This stage can of course be written to download the file from the Internet, unzip the .gz file, and load it into R, if you don't want to have the file(s) on your hard drive. However, that should not create any issues with the code below. You only need to write the code relevant to downloading and unzipping prior to the "read_table" commands, after which the code below should still operate as normal.
+# This stage can of course be written to download the file from the Internet, unzip the .gz file, and
+# load it into R, if you don't want to have the file(s) on your hard drive. However, that should not
+# create any issues with the code below. You only need to write the code relevant to downloading and
+# unzipping prior to the "read_table" commands, after which the code below should still operate as
+# normal.
 
 mydata1 <- read_table("/Users/kaanaksoy/Desktop/UWM/Fall 2022/POL SCI 935/Assignment 2/totalcounts.txt",
                       col_names = FALSE,
@@ -44,7 +48,10 @@ mydata2 <- read_table("/Users/kaanaksoy/Desktop/UWM/Fall 2022/POL SCI 935/Assign
                       col_names = c("ngram", "year", "total", "volume")) %>%
   filter(., year >= 1800 & year <= 2000) # Again, we can prune the years as before.
 
-# You don't have to name the variables as I have, obviously. However, I have done so in order to be able to easily parse the different variables in the next stage, as it will involve merging the two datasets. Being able to distinguish between the variables of the two different datasets made my job easier. Your mileage may vary.
+# You don't have to name the variables as I have, obviously. However, I have done so in order to be
+# able to easily parse the different variables in the next stage, as it will involve merging the two
+# datasets. Being able to distinguish between the variables of the two different datasets made my job
+# easier. Your mileage may vary.
 ```
 
 
@@ -108,13 +115,15 @@ dataframe <- merge(data, df, by = "Year")
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
 
 ```{r}
-## Alternative method with ggplot2 and RColorBrewer. RColorBrewer is only necessary for changing the colour palette, so if you're happy with ggplot2's native colour scheme, you can leave it out.
+## Alternative method with ggplot2 and RColorBrewer. RColorBrewer is only necessary for changing the
+## colour palette, so if you're happy with ggplot2's native colour scheme, you can leave it out.
 
 # Creating the necessary variables to replicate the figure.
 df1 <- mydata2 %>% 
   filter(., ngram == c("1883", "1910", "1950")) %>% 
   left_join(., mydata1, by = "year") %>% 
-  # This is in order to ensure that the total counts of all ngrams for all years are in the same tibble. Otherwise, calculating frequency (done in the next command) becomes unnecessarily complicated.
+  # This is in order to ensure that the total counts of all ngrams for all years are in the same tibble.
+  #Otherwise, calculating frequency (done in the next command) becomes unnecessarily complicated.
   mutate(., freq = (total/match_total)*100)
 
 # Replicating the figure (Fig. 3a).
