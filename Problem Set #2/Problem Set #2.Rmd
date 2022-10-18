@@ -195,6 +195,42 @@ e) Does the difference between (b) and (d) lead you to reevaluate any of the res
 
 f) Now, using the proportion of mentions, replicate the inset of figure 3a. That is, for each year between 1875 and 1975, calculate the half-life of that year. The half-life is defined to be the number of years that pass before the proportion of mentions reaches half its peak value. Note that Michel et al. (2011) do something more complicated to estimate the half- life---see section III.6 of their Supporting Online Information---but they claim that both approaches produce similar results. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data? (Hint: Don’t be surprised if it doesn’t.)
 
+```{r}
+# This is what I have -- it's not right but it got me somewhere
+half_life <- gram1 %>% 
+  select(year,ngram,match_count) %>% 
+  filter(ngram %in% 1875:1975, year >= 1850) %>% 
+  filter(year >= ngram) %>% 
+  merge(., total_count, by = "year", suffix = c("","_total")) %>% 
+  mutate(., frequency = match_count/match_count_total) %>% 
+  group_by(ngram) %>% 
+  mutate(max_freq = max(frequency)) %>% 
+  ungroup()
+
+half_life <- half_life %>% 
+  filter(frequency == max_freq) %>% 
+  select(ngram, peak_year = year) %>% 
+  merge(half_life, by = "ngram") %>% 
+  filter(year >= peak_year,
+         frequency <= max_freq/2) %>%
+  mutate(ngram = as.integer(ngram)) %>% 
+  group_by(ngram) %>% 
+  filter(year == min(year)) %>% 
+  mutate(half_life = year - ngram)
+
+inset <- half_life %>% 
+  ggplot(., aes(year, half_life)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Half-Life (yrs)") +
+  theme_light()
+
+inset
+
+p3a +
+  annotation_custom(ggplotGrob(inset), xmin = 1850, xmax = 1915,
+                    ymin = .00008, ymax = .00015)
+```
 
 
 g) Were there any years that were outliers, such as years that were forgotten particularly quickly or particularly slowly? Briefly speculate about possible reasons for that pattern and explain how you identified the outliers. (Hint: Check Healy 2018, ch.5 for tips to label outliers.)
