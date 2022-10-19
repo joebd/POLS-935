@@ -33,7 +33,7 @@ a) Get the raw data from the Google Books NGram Viewer website. In particular, y
 # unzipping prior to the "read_table" commands, after which the code below should still operate as
 # normal.
 
-mydata1 <- read_table("/Users/kaanaksoy/Desktop/UWM/Fall 2022/POL SCI 935/Assignment 2/totalcounts.txt",
+mydata1 <- read_table("~/Desktop/UWM/Fall 2022/POL SCI 935/Assignment 2/totalcounts.txt",
                       col_names = FALSE,
                       col_types = paste0(rep("c", 426),
                                          collapse = "")) %>% 
@@ -114,7 +114,7 @@ dataframe <- merge(data, df, by = "Year")
 
 b) Recreate the main part of figure 3a of Michel et al. (2011). To recreate this figure, you will need two files: the one you downloaded in part (a) and the "total counts" file, which you can use to convert the raw counts into proportions. Note that the total counts file has a structure that may make it a bit hard to read in. Does version 2 of the NGram data produce similar results to those presented in Michel et al. (2011), which are based on version 1 data?
 
-```{r}
+```{r, warning=FALSE}
 ## Alternative method with ggplot2 and RColorBrewer. RColorBrewer is only necessary for changing the
 ## colour palette, so if you're happy with ggplot2's native colour scheme, you can leave it out.
 
@@ -164,7 +164,7 @@ c) Now check your graph against the graph created by the NGram Viewer.
 
 d) Recreate figure 3a (main figure), but change the y-axis to be the raw mention count (not the rate of mentions).
 
-```{r}
+```{r, warning=FALSE}
 ## Alternative method with ggplot2.
 
 ggplot(df1, aes(x = year, y = total, colour = ngram)) + # Colour needs to be provided at this stage.
