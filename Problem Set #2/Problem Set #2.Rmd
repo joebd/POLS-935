@@ -230,6 +230,8 @@ inset
 p3a +
   annotation_custom(ggplotGrob(inset), xmin = 1850, xmax = 1915,
                     ymin = .00008, ymax = .00015)
+
+##I think what we need is some regression and slop + coef rsults to calculate the half life. Because when I search  google, half life is equal to exponential decay.
 ```
 
 
