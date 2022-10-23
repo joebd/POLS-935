@@ -235,6 +235,55 @@ p3a +
 ```
 
 
+```{r}
+##This is my codes for this question, I think it could produce the plot like the article.
+
+halflife.first <- rep(0,101)
+halflife.final <- rep(0,101)
+halflife.slope <- rep(0,101) 
+halflife.slope25 <- rep(0,101) 
+peak <- rep(0,101)
+for (i in 1:101) {
+  y <- 1874+i
+  postyeardata <- df$f.sc[df$ngram == as.character(y) & df$year >= y]
+  peak[i] <- max(postyeardata)
+  peakyear <- which.max(postyeardata)
+  halfpeak <- peak[i]/2
+  belowhalfyears <- which(postyeardata<halfpeak)
+  belowhalfyears <- belowhalfyears[belowhalfyears>peakyear]
+  abovehalfyears <- which(postyeardata>halfpeak)
+  abovehalfyears <- abovehalfyears[abovehalfyears>peakyear]
+  halflife.first[i] <- belowhalfyears[1]-peakyear
+  halflife.final[i] <- abovehalfyears[length(abovehalfyears)] + 1 - peakyear
+  modyears <- peakyear:length(postyeardata)
+  lnf <- log(postyeardata[modyears])
+  yrsfrom0 <- 0:(length(lnf)-1)
+  decay.mod <- lm(lnf ~ yrsfrom0)
+  halflife.slope[i] <- -log(2)/coef(decay.mod)[2]
+  lnf25 <- log(postyeardata[5:25])
+  yrs25 <- 5:25
+  decay25.mod <- lm(lnf25 ~ yrs25)
+  halflife.slope25[i] <- -log(2)/coef(decay25.mod)[2]
+}
+
+hlcor <- cor(cbind(halflife.slope25,halflife.slope,halflife.first,halflife.final))
+rownames(hlcor) <- colnames(hlcor) <- c("slope25","slope","first","last")
+
+
+plot(1875:1975,halflife.slope25, pch=19, col=rgb(0,0,0,.5),
+     main="Halflife, Slope Method, Years 5-25",
+     ylab = "Halflife (Years)", xlab = "Year - Ngram")
+lines(loess.smooth(1875:1975,halflife.slope25,span=1/4, degree=1),
+      col=rgb(0,0,0,.5), lwd=3)
+points(1883, 23.999902, col = "blue")
+points(1910, 20.254652, col = "green")
+points(1950, 13.618033, col = "red")
+
+
+```
+
+
+
 g) Were there any years that were outliers, such as years that were forgotten particularly quickly or particularly slowly? Briefly speculate about possible reasons for that pattern and explain how you identified the outliers. (Hint: Check Healy 2018, ch.5 for tips to label outliers.)
 
 
