@@ -8,3 +8,16 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+```
+```{r}
+mydata <- fromJSON("https://data.nasa.gov/data.json")
+names(mydata$dataset)
+```
+```{r}
+
+```
+
