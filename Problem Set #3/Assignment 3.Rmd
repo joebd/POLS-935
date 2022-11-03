@@ -1,0 +1,10 @@
+---
+title: "Assignment 3"
+author: '[Your Name Goes Here]'
+date: "2022-11-03"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
