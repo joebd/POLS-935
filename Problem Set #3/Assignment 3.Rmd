@@ -9,16 +9,148 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+In this assignment, we are going to replicate and extend Silge and Robinson (2017) Chapter 8 (https://www.tidytextmining.com/nasa.html).
+
+I want you to work through each section to reproduce the results of their case study. I want you to include in your assignment PDF the following:
+
+a) how you acquired the data, the steps you took to get it into tidy format (do NOT print out the data frame in your assignment!) and a WordCloud of the top 100 terms;
+
+b) reproduce Figure 8.1 and include it and the code in the PDF along with a sentence or two explaining what you see;
+
+c) calculate tf-idf and replicate Figure 8.5, showing your work, and provide a few sentences interpreting what you see there;
+
+d) run LDA, reproduce Figure 8.6, and interpret results with a few sentences. Is what you found different from the original? Why?
+
 ```{r}
+# Loading the basic necessary libraries.
 library(tidyverse)
 library(tidytext)
 library(jsonlite)
 ```
 ```{r}
-mydata <- fromJSON("https://data.nasa.gov/data.json")
-names(mydata$dataset)
-```
-```{r}
+metadata <- fromJSON("https://data.nasa.gov/data.json")
+# names(metadata$dataset)
+# We don't want this in our output document, probably. Uncomment to use in diagnostics.
 
+# Creating a list of custom stopwords.
+my_stopwords <- tibble(word = c(as.character(1:10), 
+                                "v1", "v1.0", "v2.0", "v3.0", "v5.0", "0.5", "v001",
+                                "2022.0", "67p", "v03", "l2", "l3", "l4", "v5.2.0",
+                                "v003", "v004", "v005", "v006", "v7", "0.25", "v061",
+                                "0.667", "v07", "16", "9p"))
+
+# Using "identifier" as identification of observations as recommended.
+nasa_titles <- tibble(id = metadata$dataset$identifier,
+                      title = metadata$dataset$title) %>% 
+  unnest_tokens(., word, title) %>% 
+  anti_join(., stop_words) %>% 
+  anti_join(., my_stopwords)
+
+nasa_desc <- tibble(id = metadata$dataset$identifier,
+                    desc = metadata$dataset$description) %>% 
+  unnest_tokens(., word, desc) %>% 
+  anti_join(., stop_words) %>% 
+  anti_join(., my_stopwords)
+
+nasa_keyword <- tibble(id = metadata$dataset$identifier,
+                       keyword = metadata$dataset$keyword) %>% 
+  unnest(., keyword) %>% 
+  mutate(., keyword = toupper(keyword)) # Removing duplicates due to upper/lower case.
+
+# Word cloud of the 100 most used words!
+library(ggwordcloud)
+library(igraph)
+library(ggraph)
+
+# This is where we diverge from Silge and Robinson (2017) since they do something else.
+# We want to make a word cloud of the 100 most used words, while they create networks
+# of the most frequent pairs. That is not what is asked of us here.
+title_words <- nasa_titles %>% 
+  count(., word, id, sort = T) %>% 
+  distinct(., word, n) # Otherwise, we get several repeat instances of words.
+
+ggplot(data = slice(title_words, 1:100),
+       aes(label = word,
+           size = n)) +
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 5) # Making the plot bigger so we can see the smaller words.
+```
+
+```{r}
+# Back to Silge and Robinson (2017): networks of descriptions and title words.
+library(widyr)
+
+title_word_pairs <- nasa_titles %>% 
+  pairwise_count(., word, id, sort = T, upper = F)
+
+title_word_pairs %>% 
+  filter(., n >= 250) %>% 
+  graph_from_data_frame(.) %>% 
+  ggraph(., layout = "fr") + 
+  geom_edge_link(aes(edge_alpha = n,
+                     edge_width = n),
+                 edge_colour = "darkred") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name),
+                 repel = T,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
+```
+
+[Your interpretation comes here.]
+
+```{r}
+# Calculating tf-idf and replicating Silge and Robinson's (2017) Figure 8.5.
+desc_tf_idf <- nasa_desc %>% 
+  count(., id, word, sort = T) %>% 
+  bind_tf_idf(., word, id, n)
+desc_tf_idf <- full_join(desc_tf_idf, nasa_keyword, by = "id")
+
+desc_tf_idf %>% 
+  filter(., !near(tf, 1)) %>% 
+  filter(., keyword %in% c("SOLAR ACTIVITY", "CLOUDS", "SEISMOLOGY",
+                           "ASTROPHYSICS", "HUMAN HEALTH", "BUDGET")) %>% 
+  arrange(., desc(tf_idf)) %>% 
+  group_by(., keyword) %>% 
+  distinct(., word, keyword, .keep_all = T) %>% 
+  slice_max(., tf_idf, n = 15, with_ties = F) %>% 
+  ungroup(.) %>% 
+  mutate(., word = factor(word, levels = rev(unique(word))))
+
+# You can pipe the above directly into ggplot and not specify data beyond the
+# "." default sign. I wanted to do it separately for clarity purposes.
+ggplot(data = desc_tf_idf,
+       aes(tf_idf, word, fill = keyword)) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ keyword, ncol = 3, scales = "free")
+  labs(title = "Highest tf-idf words in NASA metadata description fields",
+       caption = "NASA metadata from https://data.nasa.gov/data.json",
+       x = "tf-idf", y = NULL)
+```
+
+[Your interpretation comes here.]
+
+```{r}
+# Onwards! Replicating Silge and Robinson's (2017) Figure 8.6.
+library(topicmodels)
+
+my_stopwords <- bind_rows(stop_words,
+                          tibble(word = c("nbsp", "amp", "gt", "lt",
+                                           "timesnewromanpsmt", "font",
+                                           "td", "li", "br", "tr", "quot",
+                                           "st", "img", "src", "strong",
+                                           "http", "file", "files",
+                                           as.character(1:12)),
+                                 lexicon = rep("custom", 30)))
+
+word_counts <- nasa_desc %>% 
+  anti_join(., my_stopwords) %>% 
+  count(., id, word, sort = T) %>% 
+  ungroup(.)
+
+desc_dtm <- word_counts %>% 
+  cast_dtm(., id, word, n)
+
+desc_lda <- LDA(desc_dtm, k = 24, control = list(seed = 1000))
 ```
 
