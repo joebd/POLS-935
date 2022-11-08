@@ -153,5 +153,24 @@ desc_dtm <- word_counts %>%
 desc_lda <- LDA(desc_dtm, k = 24)
 
 tidy_lda <- tidy(desc_lda)
+top_terms <- tidy_lda %>% 
+  group_by(., topic) %>% 
+  slice_max(., beta, n = 10, with_ties = F) %>% 
+  ungroup(.) %>% 
+  arrange(., topic, -beta)
+
+# The figure itself. The output is pretty hideous, so further tinkering is necessary.
+top_terms %>% 
+  mutate(., term = reorder_within(term, beta, topic)) %>% 
+  group_by(., topic, term) %>% 
+  arrange(., desc(beta)) %>% 
+  ungroup(.) %>% 
+  ggplot(., aes(x = beta, y = term, fill = as.factor(topic))) +
+  geom_col(show.legend = F) +
+  scale_y_reordered() +
+  labs(title = "Top 10 terms in each LDA topic",
+       x = expression(beta), y = NULL) +
+  facet_wrap(~ topic, ncol = 4, scales = "free")
 ```
 
+[Your interpretation comes here.]
