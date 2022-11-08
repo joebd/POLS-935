@@ -147,6 +147,11 @@ word_counts <- nasa_desc %>%
 desc_dtm <- word_counts %>% 
   cast_dtm(., id, word, n)
 
-desc_lda <- LDA(desc_dtm, k = 24, control = list(seed = 1000))
+# The below takes some time. Go make yourself some coffee, tea, etc. and relax on the
+# couch for a few moments, play with your cat, and then come back later. Basically,
+# give it time. About 10-15 minutes.
+desc_lda <- LDA(desc_dtm, k = 24)
+
+tidy_lda <- tidy(desc_lda)
 ```
 
