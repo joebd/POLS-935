@@ -158,8 +158,10 @@ top_terms <- tidy_lda %>%
   slice_max(., beta, n = 10, with_ties = F) %>% 
   ungroup(.) %>% 
   arrange(., topic, -beta)
-
-# The figure itself. The output is pretty hideous, so further tinkering is necessary.
+```
+```{r, fig.height=16}
+# The figure itself. Without adjusting the figure dimensions in the chunk settings, it is
+# impossible to read. So, tinker around with "fig.height" and "fig.width" as necessary.
 top_terms %>% 
   mutate(., term = reorder_within(term, beta, topic)) %>% 
   group_by(., topic, term) %>% 
