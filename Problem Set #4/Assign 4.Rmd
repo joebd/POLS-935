@@ -1,0 +1,29 @@
+---
+title: "Assignment 4"
+author: 
+date: "11/12/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Note: Please prepare your answers using Rmarkdown and submit a pdf via Canvas. Each submission has to include all code and R output used to answer the questions. I encourage you to work on the assignments together, but each of you have to type up their responses individually. Identical submissions will not be accepted. Late submissions may only receive partial credit.
+
+ 
+
+In a paper titled “Crowdseeding in Eastern Congo: Using Cell Phones to Collect Conflict Events Data in Real
+Time,” Van der Windt and Humphreys (2016) describe a distributed data collection system (see chapter 5 in Bit By Bit) that they created in Eastern Congo. Read the paper.
+
+a) Redundancy is an important way to assess the quality of distributed data collection. Van der Windt and
+Humphreys (2016) developed and tested a system to collect reports of conflict events from people in Eastern
+Congo. How does their design ensure redundancy?
+
+b) They offered several approaches to validate the data collected from their project. Summarize them. Which
+was most convincing to you?
+
+c) Describe how the researchers dealt with the uncertainty of possible harms to participants.
+
+d) Propose a new way that the data could be validated. Suggestions should try to increase the confidence that
+you would have in the data in a way that is cost-effective and ethical.
