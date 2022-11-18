@@ -1,0 +1,33 @@
+---
+title: 'Problem Set #5'
+author: 'INSERT NAME'
+date: "2022-11-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Note:* Please prepare your answers using Rmarkdown and submit a pdf via Canvas. Each submission has to include all code and R output used to answer the questions. I encourage you to work on the assignments together, but each of you have to type up their responses individually. Identical submissions will not be accepted. Late submissions only receive partial credit.
+
+
+Discussing Gerber, Green, and Larimer (2008)
+
+In August 2006, about 10 days prior to the primary election, 20,000 people living in Michigan received a mailing that showed their voting behavior and the voting behavior of their neighbors. One-piece mailings typically increase voter turnout by about one percentage point, but this one increased turnout by 8.1 percentage points, the largest effect seen up to that point (Gerber, Green, and Larimer 2008). The effect was so large that a political operative named Hal Malchow offered Donald Green $100,000 not to publish the result of the experiment (presumably so that Malchow could make use of this information himself) (Issenberg 2012, 304). But Alan Gerber, Donald Green, and Christopher Larimer did publish the paper in 2008 in the American Political Science Review. When you carefully inspect the mailer in Appendix A (Gerber, Green, and Larimer 2008, 46) you may notice that the researchers’ names do not appear on it. Rather, the return address is to Practical Political Consulting. In the acknowledgment to the paper, the authors explain: “Special thanks go to Mark Grebner of Practical Political Consulting, who designed and administered the mail program studied here.”
+
+
+
+a) Assess the use of this treatment in terms of the four ethical principles described in Chapter 6 of Bit By Bit (Salganik 2019).
+
+
+b) Assess the treatment in terms of the idea of contextual integrity.
+
+
+c) What changes, if any, would you recommend to this experiment?
+
+
+d) Would it impact your answers to the questions above if Mark Grebner was already sending similar mailings at this time? More generally, how should researchers think about evaluating existing interventions created by practitioners?
+
+
+e) Imagine that you decide to try to receive informed consent from people in the treatment group but not those in the control group. What impact might this decision have on your ability to understand the cause of a difference in voting rates between the treatment and control groups?
